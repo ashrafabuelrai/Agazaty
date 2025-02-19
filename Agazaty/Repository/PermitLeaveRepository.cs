@@ -15,12 +15,8 @@ namespace Agazaty.Repository
 
         public void Update(PermitLeave permitLeave)
         {
-            var old = _db.PermitLeaves.FirstOrDefault(p => p.Id == permitLeave.Id);
-            old.Hours = permitLeave.Hours;
-            old.Date = permitLeave.Date;
-            old.PermitLeaveImages = permitLeave.PermitLeaveImages;
-            old.EmployeeNationalNumber = permitLeave.EmployeeNationalNumber;
-            _db.SaveChanges();
+            _db.PermitLeaves.Update(permitLeave);
+            
         }
     }
 }

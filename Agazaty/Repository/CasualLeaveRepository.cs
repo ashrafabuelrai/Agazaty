@@ -15,11 +15,7 @@ namespace Agazaty.Repository
 
         public void Update(CasualLeave casualLeave)
         {
-            var old = _db.CasualLeaves.FirstOrDefault(c => c.Id == casualLeave.Id);
-            old.StartDate = casualLeave.StartDate;
-            old.EndDate = casualLeave.EndDate;
-            old.Year = casualLeave.Year;
-            
+            _db.CasualLeaves.Update(casualLeave);
         }
     }
 }
