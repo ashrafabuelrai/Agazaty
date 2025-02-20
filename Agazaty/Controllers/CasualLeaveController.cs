@@ -2,6 +2,7 @@
 using Agazaty.Models.DTO;
 using Agazaty.Repository.IRepository;
 using AutoMapper;
+using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -20,7 +21,7 @@ namespace Agazaty.Controllers
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        [HttpGet("{leaveID:int}")]
+        [HttpGet("{leaveID:int}",Name = "GetCasualLeave")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<CasualLeaveDTO> GetCasualLeave(int leaveID)
@@ -32,7 +33,7 @@ namespace Agazaty.Controllers
             }
             return Ok(_mapper.Map<CasualLeaveDTO>(casualLeave));
         }
-        [HttpGet]
+        [HttpGet(Name = "GetAllCasualLeave")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<CasualLeaveDTO>> GetAllCasualLeave()
         {
@@ -53,7 +54,7 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
             return Ok(casualLeave);
         }
-        [HttpPut("{leaveID:int}")]
+        [HttpPut("{leaveID:int}",Name = "UpdateCasualLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -73,7 +74,7 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
             return NoContent();
         }
-        [HttpDelete("{leaveID:int}")]
+        [HttpDelete("{leaveID:int}",Name = "DeleteCasualLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -93,5 +94,6 @@ namespace Agazaty.Controllers
 
             return NoContent();
         }
+        
     }
 }

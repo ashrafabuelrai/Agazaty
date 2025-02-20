@@ -89,7 +89,7 @@ namespace Agazaty.Controllers
 
             return CreatedAtRoute("GetPermitLeave", new { leaveID =permitLeave.Id},permitLeave);
         }
-        [HttpPut("{leaveID:int}")]
+        [HttpPut("{leaveID:int}",Name = "UpdatePermitLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -141,7 +141,7 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
             return NoContent();
         }
-        [HttpDelete("{leaveID:int}")]
+        [HttpDelete("{leaveID:int}",Name = "DeletePermitLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -173,6 +173,29 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
 
             return NoContent();
+        }
+        [HttpDelete("DeleteImage/{imageId:int}", Name = "DeleteImage")]
+        [ProducesResponseType(StatusCodes.Status204NoContent)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public IActionResult DeleteImage(int imageId)
+        {
+            var imageToBeDeleted = _unitOfWork.PermitLeaveImage.Get(pi => pi.Id == imageId);
+            if (imageToBeDeleted != null)
+            {
+                if (!string.IsNullOrEmpty(imageToBeDeleted.ImageUrl))
+                {
+                    var oldImagePath = Path.Combine(_webHostEnvironment.WebRootPath, imageToBeDeleted.ImageUrl.TrimStart('\\'));
+                    if (System.IO.File.Exists(oldImagePath))
+                    {
+                        System.IO.File.Delete(oldImagePath);
+                    }
+                }
+                _unitOfWork.PermitLeaveImage.Remove(imageToBeDeleted);
+                _unitOfWork.Save();
+
+                return NoContent();
+            }
+            return NotFound();
         }
     }
 }

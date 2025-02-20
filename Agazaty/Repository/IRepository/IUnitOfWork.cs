@@ -4,6 +4,7 @@
     {
         IPermitLeaveRepository PermitLeave { get; }
         ICasualLeaveRepository CasualLeave { get; }
+        IPermitLeaveImageRepository PermitLeaveImage { get; }
         void Save();
     }
 }
