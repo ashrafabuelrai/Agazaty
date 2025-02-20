@@ -21,12 +21,19 @@ namespace Agazaty.Controllers
             _unitOfWork = unitOfWork;
         }
         [HttpGet("{leaveID:int}")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<CasualLeaveDTO> GetCasualLeave(int leaveID)
         {
             var casualLeave = _unitOfWork.CasualLeave.Get(c => c.Id == leaveID);
+            if(casualLeave==null)
+            {
+                return NotFound();
+            }
             return Ok(_mapper.Map<CasualLeaveDTO>(casualLeave));
         }
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<CasualLeaveDTO>> GetAllCasualLeave()
         {
             var casualLeaves = _unitOfWork.CasualLeave.GetAll().ToList();

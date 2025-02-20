@@ -23,12 +23,19 @@ namespace Agazaty.Controllers
             _webHostEnvironment = webHostEnvironment;
         }
         [HttpGet("{leaveID:int}",Name = "GetPermitLeave")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<PermitLeaveDTO> GetPermitLeave(int leaveID)
         {
             var permitLeave = _unitOfWork.PermitLeave.Get(c => c.Id == leaveID);
+            if(permitLeave==null)
+            {
+                return NotFound();
+            }
             return Ok(_mapper.Map<PermitLeaveDTO>(permitLeave));
         }
         [HttpGet]
+        [ProducesResponseType(StatusCodes.Status200OK)]
         public ActionResult<IEnumerable<PermitLeaveDTO>> GetAllPermitLeave()
         {
             var permitLeaves = _unitOfWork.PermitLeave.GetAll().ToList();
@@ -149,6 +156,19 @@ namespace Agazaty.Controllers
             {
                 return NotFound();
             }
+            string permitLeavePath = @"images\Permitleaves\PermitLeaveUser-" +permitLeave.Id;
+            string finalPath = Path.Combine(_webHostEnvironment.WebRootPath, permitLeavePath);
+
+            if (Directory.Exists(finalPath))
+            {
+                string[] filePaths = Directory.GetFiles(finalPath);
+                foreach (string filePath in filePaths)
+                {
+                    System.IO.File.Delete(filePath);
+                }
+                Directory.Delete(finalPath);
+            }
+
             _unitOfWork.PermitLeave.Remove(permitLeave);
             _unitOfWork.Save();
 
