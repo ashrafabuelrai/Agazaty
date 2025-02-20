@@ -22,7 +22,7 @@ namespace Agazaty.Controllers
             _unitOfWork = unitOfWork;
             _webHostEnvironment = webHostEnvironment;
         }
-        [HttpGet("{leaveID:int}",Name = "GetPermitLeave")]
+        [HttpGet("GetPermitLeave/{leaveID:int}", Name = "GetPermitLeave")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<PermitLeaveDTO> GetPermitLeave(int leaveID)
@@ -34,14 +34,57 @@ namespace Agazaty.Controllers
             }
             return Ok(_mapper.Map<PermitLeaveDTO>(permitLeave));
         }
-        [HttpGet]
+        [HttpGet("GetAllPermitLeaves", Name = "GetAllPermitLeaves")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<PermitLeaveDTO>> GetAllPermitLeave()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<PermitLeaveDTO>> GetAllPermitLeaves()
         {
             var permitLeaves = _unitOfWork.PermitLeave.GetAll().ToList();
+            if (permitLeaves == null)
+            {
+                return NotFound();
+            }
             return Ok(_mapper.Map<IEnumerable<PermitLeaveDTO>>(permitLeaves));
         }
-        [HttpPost]
+        [HttpGet("GetAllPermitLeavesByUserID/{userID}", Name = "GetAllPermitLeavesByUserID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<PermitLeaveDTO>> GetAllPermitLeavesByUserID(string userID)
+        {
+            var permitLeaves = _unitOfWork.PermitLeave.GetAll(p=>p.UserId==userID).ToList();
+            if(permitLeaves==null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<IEnumerable<PermitLeaveDTO>>(permitLeaves));
+        }
+        [HttpGet("GetAllPermitLeavesByUserIDAndMonth/{userID}/{month:int}", Name = "GetAllPermitLeavesByUserIDAndMonth")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<PermitLeaveDTO>> GetAllPermitLeavesByUserIDAndMonth(string userID,int month)
+        {
+            var permitLeaves = _unitOfWork.PermitLeave.GetAll(p => p.UserId == userID&&
+                               p.Date.Month==month).ToList();
+            if (permitLeaves == null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<IEnumerable<PermitLeaveDTO>>(permitLeaves));
+        }
+        [HttpGet("GetAllPermitLeavesByUserIDAndYear/{userID}/{year:int}", Name = "GetAllPermitLeavesByUserIDAndYear")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<PermitLeaveDTO>> GetAllPermitLeavesByUserIDAndYear( string userID, int year)
+        {
+            var permitLeaves = _unitOfWork.PermitLeave.GetAll(p => p.UserId == userID&&
+                               p.Date.Year==year).ToList();
+            if (permitLeaves == null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<IEnumerable<PermitLeaveDTO>>(permitLeaves));
+        }
+        [HttpPost("CreatePermitLeave",Name = "CreatePermitLeave")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<PermitLeave> CreatePermitLeave([FromForm] CreatePermitLeaveDTO model,[FromForm] List<IFormFile>? files)
@@ -58,7 +101,7 @@ namespace Agazaty.Controllers
                 foreach (var file in files)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string permitLeavePath = @"images\PermitLeaves\PermitLeaveUser-" + permitLeave.Id;
+                    string permitLeavePath = @"images\PermitLeaves\PermitLeaveUser-" + permitLeave.UserId;
                     string finalPath = Path.Combine(wwwRootPath, permitLeavePath);
 
                     if (!Directory.Exists(finalPath))
@@ -89,7 +132,7 @@ namespace Agazaty.Controllers
 
             return CreatedAtRoute("GetPermitLeave", new { leaveID =permitLeave.Id},permitLeave);
         }
-        [HttpPut("{leaveID:int}",Name = "UpdatePermitLeave")]
+        [HttpPut("UpdatePermitLeave/{leaveID:int}", Name = "UpdatePermitLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -111,7 +154,7 @@ namespace Agazaty.Controllers
                 foreach (var file in files)
                 {
                     string fileName = Guid.NewGuid().ToString() + Path.GetExtension(file.FileName);
-                    string permitLeavePath = @"images\PermitLeaves\PermitLeaveUser-" + permitLeave.Id;
+                    string permitLeavePath = @"images\PermitLeaves\PermitLeaveUser-" + permitLeave.UserId;
                     string finalPath = Path.Combine(wwwRootPath, permitLeavePath);
 
                     if (!Directory.Exists(finalPath))
@@ -141,7 +184,7 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
             return NoContent();
         }
-        [HttpDelete("{leaveID:int}",Name = "DeletePermitLeave")]
+        [HttpDelete("DeletePermitLeave/{leaveID:int}", Name = "DeletePermitLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

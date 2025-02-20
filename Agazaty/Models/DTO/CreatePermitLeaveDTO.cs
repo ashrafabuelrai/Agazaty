@@ -10,5 +10,6 @@ namespace Agazaty.Models.DTO
         [Required]
         public DateOnly Date { get; set; }
         
+
     }
 }

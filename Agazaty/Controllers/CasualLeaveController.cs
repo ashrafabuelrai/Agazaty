@@ -21,7 +21,7 @@ namespace Agazaty.Controllers
             _mapper = mapper;
             _unitOfWork = unitOfWork;
         }
-        [HttpGet("{leaveID:int}",Name = "GetCasualLeave")]
+        [HttpGet("GetCasualLeave/{leaveID:int}", Name = "GetCasualLeave")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
         public ActionResult<CasualLeaveDTO> GetCasualLeave(int leaveID)
@@ -33,14 +33,44 @@ namespace Agazaty.Controllers
             }
             return Ok(_mapper.Map<CasualLeaveDTO>(casualLeave));
         }
-        [HttpGet(Name = "GetAllCasualLeave")]
+        [HttpGet("GetAllCasualLeaves", Name = "GetAllCasualLeaves")]
         [ProducesResponseType(StatusCodes.Status200OK)]
-        public ActionResult<IEnumerable<CasualLeaveDTO>> GetAllCasualLeave()
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<CasualLeaveDTO>> GetAllCasualLeaves()
         {
             var casualLeaves = _unitOfWork.CasualLeave.GetAll().ToList();
+            if (casualLeaves == null)
+            {
+                return NotFound();
+            }
             return Ok(_mapper.Map<IEnumerable<CasualLeaveDTO>>(casualLeaves));
         }
-        [HttpPost]
+        [HttpGet("GetAllCasualLeavesByUserID/{userID}", Name = "GetAllCasualLeavesByUserID")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<CasualLeaveDTO>> GetAllCasualLeavesByUserID(string userID)
+        {
+            var casualLeaves = _unitOfWork.CasualLeave.GetAll(c=>c.UserId==userID).ToList();
+            if(casualLeaves==null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<IEnumerable<CasualLeaveDTO>>(casualLeaves));
+        }
+        [HttpGet("GetAllCasualLeavesByUserIDAndYear/{userID}/{year:int}", Name = "GetAllCasualLeavesByUserIDAndYear")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public ActionResult<IEnumerable<CasualLeaveDTO>> GetAllCasualLeavesByUserIDAndYear(string userID, int year)
+        {
+            var casualLeaves = _unitOfWork.CasualLeave.GetAll(c => c.UserId == userID 
+                              && c.Year.Year==year).ToList();
+            if (casualLeaves == null)
+            {
+                return NotFound();
+            }
+            return Ok(_mapper.Map<IEnumerable<CasualLeaveDTO>>(casualLeaves));
+        }
+        [HttpPost("CreateCasualLeave",Name = "CreateCasualLeave")]
         [ProducesResponseType(StatusCodes.Status200OK)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         public ActionResult<CasualLeave> CreateCasualLeave([FromBody] CreateCasualLeaveDTO model)
@@ -54,7 +84,7 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
             return Ok(casualLeave);
         }
-        [HttpPut("{leaveID:int}",Name = "UpdateCasualLeave")]
+        [HttpPut("UpdateCasualLeave/{leaveID:int}", Name = "UpdateCasualLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]
@@ -74,7 +104,7 @@ namespace Agazaty.Controllers
             _unitOfWork.Save();
             return NoContent();
         }
-        [HttpDelete("{leaveID:int}",Name = "DeleteCasualLeave")]
+        [HttpDelete("DeleteCasualLeave/{leaveID:int}", Name = "DeleteCasualLeave")]
         [ProducesResponseType(StatusCodes.Status204NoContent)]
         [ProducesResponseType(StatusCodes.Status400BadRequest)]
         [ProducesResponseType(StatusCodes.Status404NotFound)]

@@ -10,6 +10,8 @@ namespace Agazaty.Models.DTO
         public double Hours { get; set; }
         [Required]
         public DateOnly Date { get; set; }
-        
+        [Required]
+        public string UserId { get; set; }
+
     }
 }

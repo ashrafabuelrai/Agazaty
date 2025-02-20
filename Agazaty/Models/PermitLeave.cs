@@ -12,7 +12,8 @@ namespace Agazaty.Models
         public double Hours { get; set; }
         [Required]
         public DateOnly Date { get; set; }
-        public string? UserId { get; set; }
+        [Required]
+        public string UserId { get; set; }
         [Required]
         public List<PermitLeaveImage> PermitLeaveImages { get; set; }
     }
