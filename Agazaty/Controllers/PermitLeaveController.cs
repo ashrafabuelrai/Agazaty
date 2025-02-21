@@ -2,7 +2,6 @@
 using Agazaty.Models.DTO;
 using Agazaty.Repository.IRepository;
 using AutoMapper;
-using MagicVilla_VillaAPI.Models;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
