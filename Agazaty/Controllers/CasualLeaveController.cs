@@ -5,6 +5,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using System.Net;
 
 namespace Agazaty.Controllers
@@ -110,7 +111,7 @@ namespace Agazaty.Controllers
             try
             {
                 var casualLeaves = _unitOfWork.CasualLeave.GetAll(c => c.UserId == userID
-                                  && c.Year.Year == year).ToList();
+                                  && c.Year == year).ToList();
                 if (casualLeaves == null||casualLeaves.Count()==0)
                 {
                     _response.StatusCode = HttpStatusCode.NotFound;
@@ -142,11 +143,34 @@ namespace Agazaty.Controllers
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
+                if (DateOnly.FromDateTime(model.StartDate)>= DateOnly.FromDateTime(DateTime.Now))
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessage = new List<string>() { "You have to choose on a past date" };
+                    return BadRequest(_response);
+                }
+                if ((model.EndDate - model.StartDate).Days < 1)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessage = new List<string>() { "You have to choose at least one day " };
+                    return BadRequest(_response);
+                }
+                if ((model.EndDate -model.StartDate).Days > 2)
+                {
+                    _response.StatusCode = HttpStatusCode.BadRequest;
+                    _response.IsSuccess = false;
+                    _response.ErrorMessage = new List<string>() { "You have exceeded the allowed number of days " };
+                    return BadRequest(_response);
+                }
                 var casualLeave = _mapper.Map<CasualLeave>(model);
+                casualLeave.Year = model.StartDate.Year;
                 _unitOfWork.CasualLeave.Add(casualLeave);
                 _unitOfWork.Save();
                 _response.StatusCode = HttpStatusCode.Created;
                 _response.Result= _mapper.Map<CasualLeaveDTO>(casualLeave);
+                
                 return CreatedAtRoute("GetCasualLeave", new { leaveID = casualLeave.Id},_response);
             }
             catch (Exception ex)

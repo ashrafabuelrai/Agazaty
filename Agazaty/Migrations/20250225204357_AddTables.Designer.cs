@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Agazaty.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    [Migration("20250219175645_AddCasualAndPermitLeave")]
-    partial class AddCasualAndPermitLeave
+    [Migration("20250225204357_AddTables")]
+    partial class AddTables
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -39,8 +39,12 @@ namespace Agazaty.Migrations
                     b.Property<DateTime>("StartDate")
                         .HasColumnType("datetime2");
 
-                    b.Property<DateOnly>("Year")
-                        .HasColumnType("date");
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("Year")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -65,13 +69,51 @@ namespace Agazaty.Migrations
                     b.Property<double>("Hours")
                         .HasColumnType("float");
 
-                    b.Property<string>("ImageUrl")
+                    b.Property<string>("UserId")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("Id");
 
                     b.ToTable("PermitLeaves");
+                });
+
+            modelBuilder.Entity("Agazaty.Models.PermitLeaveImage", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<string>("ImageUrl")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int>("LeaveId")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("LeaveId");
+
+                    b.ToTable("PermitLeaveImages");
+                });
+
+            modelBuilder.Entity("Agazaty.Models.PermitLeaveImage", b =>
+                {
+                    b.HasOne("Agazaty.Models.PermitLeave", "PermitLeave")
+                        .WithMany("PermitLeaveImages")
+                        .HasForeignKey("LeaveId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("PermitLeave");
+                });
+
+            modelBuilder.Entity("Agazaty.Models.PermitLeave", b =>
+                {
+                    b.Navigation("PermitLeaveImages");
                 });
 #pragma warning restore 612, 618
         }

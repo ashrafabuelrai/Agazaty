@@ -164,6 +164,7 @@ namespace Agazaty.Controllers
         {
             try
             {
+                // check if it is allowed to take leave or not
                 if(model==null)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
