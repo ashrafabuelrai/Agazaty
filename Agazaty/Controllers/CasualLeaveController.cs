@@ -143,7 +143,8 @@ namespace Agazaty.Controllers
                     _response.IsSuccess = false;
                     return BadRequest(_response);
                 }
-                if (DateOnly.FromDateTime(model.StartDate)>= DateOnly.FromDateTime(DateTime.Now))
+                if (DateOnly.FromDateTime(model.StartDate)>= DateOnly.FromDateTime(DateTime.Now)||
+                    DateOnly.FromDateTime(model.EndDate) >= DateOnly.FromDateTime(DateTime.Now))
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
@@ -157,7 +158,7 @@ namespace Agazaty.Controllers
                     _response.ErrorMessage = new List<string>() { "You have to choose at least one day " };
                     return BadRequest(_response);
                 }
-                if ((model.EndDate -model.StartDate).Days > 2)
+                if ((model.EndDate -model.StartDate).Days >= 2)
                 {
                     _response.StatusCode = HttpStatusCode.BadRequest;
                     _response.IsSuccess = false;
